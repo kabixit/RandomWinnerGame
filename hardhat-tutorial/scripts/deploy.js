@@ -3,6 +3,9 @@ require("dotenv").config({ path: ".env" });
 const { FEE, VRF_COORDINATOR, LINK_TOKEN, KEY_HASH } = require("../constants");
 
 async function main() {
+
+  const [deployer] = await ethers.getSigners();
+
   /*
  DeployContract in ethers.js is an abstraction used to deploy new smart contracts,
  so randomWinnerGame here is a factory for instances of our RandomWinnerGame contract.
@@ -10,8 +13,10 @@ async function main() {
    // deploy the contract
    const randomWinnerGame = await hre.ethers.deployContract(
      "RandomWinnerGame",
-     [VRF_COORDINATOR, LINK_TOKEN, KEY_HASH, FEE]
+     [VRF_COORDINATOR, LINK_TOKEN, KEY_HASH, FEE, deployer.address]
    );
+
+
 
   await randomWinnerGame.waitForDeployment();
 
@@ -25,7 +30,7 @@ async function main() {
   // Verify the contract after deploying
   await hre.run("verify:verify", {
     address: randomWinnerGame.target,
-    constructorArguments: [VRF_COORDINATOR, LINK_TOKEN, KEY_HASH, FEE],
+    constructorArguments: [VRF_COORDINATOR, LINK_TOKEN, KEY_HASH, FEE, deployer.address],
   });
 }
 
